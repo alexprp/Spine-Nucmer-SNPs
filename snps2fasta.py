@@ -186,7 +186,7 @@ def fill_query_dict(ref_dict, query_dict):
 
 
 
-def make_snp_matrix(snps_obj_list):
+def make_snp_matrix(snps_obj_list,singleton):
 	"""
 	Flattens all the dictionaries of snps in each snps_object class and adds them to a single subdict associated with their genome ID as a key in the main dict {genome_id : {contig_position : nucleotide}}
 	Args:
@@ -211,8 +211,10 @@ def make_snp_matrix(snps_obj_list):
 						if entry.genomeid == snps_obj_list[0].genomeid:
 							snp_matrix["Genome_ID"].append("%s_position_%i_indel_%i" %(backbone, pos, indel_pos))
 						snp_matrix[entry.genomeid]["%s_position_%i_indel_%i" %(backbone, pos, indel_pos)] = indel
-
-	return snp_matrix
+	if singleton:
+		return remove_singletons(snp_matrix)
+	else:
+		return snp_matrix
 
 def remove_singletons(snp_matrix):
 	'''
@@ -220,21 +222,21 @@ def remove_singletons(snp_matrix):
 	Detects positions in the SNP matrix where only one genome contains a certain base at that position,
 	removes that position, prints that information to the buffer, and returns a new matrix without them.
 	Args:
-    		snp_matrix (dict): Dictionary of structure {genome: {position: base}} produced by the function above
-    	Returns: 
+		snp_matrix (dict): Dictionary of structure {genome: {position: base}} produced by the function above
+	Returns: 
 		(dict) {genome_id : {contig_position : nucleotide}}
 	'''
 
 	singleton_positions = {}
 	for pos in snp_matrix['Genome_ID']:
-    		seq = ''.join([snp_matrix[genome][pos] for genome in snp_matrix if genome != 'Genome_ID']).upper()
-    		base_counts = {base: seq.count(base) for base in 'ACGT'}
-    		if 1 in base_counts.values():
-        		bases = [x for x in base_counts if base_coutns[x] == 1]
-        		genomes = [x for x in snp_matrix if x != 'Genome_ID' and snp_matrix[x][pos].upper() in bases]
-        		singleton_positions[pos] = {genome: snp_matrix[genome][pos] for genome in genomes}
-        		singleton_positions[pos]['counts'] = base_counts
-        		print('Singleton position ' + pos + ' removed; '  + re.sub("[{}']",'',str(singleton_positions[pos])))
+			seq = ''.join([snp_matrix[genome][pos] for genome in snp_matrix if genome != 'Genome_ID']).upper()
+			base_counts = {base: seq.count(base) for base in 'ACGT'}
+			if 1 in base_counts.values():
+				bases = [x for x in base_counts if base_coutns[x] == 1]
+				genomes = [x for x in snp_matrix if x != 'Genome_ID' and snp_matrix[x][pos].upper() in bases]
+				singleton_positions[pos] = {genome: snp_matrix[genome][pos] for genome in genomes}
+				singleton_positions[pos]['counts'] = base_counts
+				print('Singleton position ' + pos + ' removed; '  + re.sub("[{}']",'',str(singleton_positions[pos])))
 	new_snp_mat = {
 		genome:
 			{position:
@@ -324,8 +326,8 @@ parser.add_argument(
 	help="Specify whether you want the output fasta to be the entire core sequence or just the variant sites. "
 	)
 parser.add_argument(
-	"-remove-singletons", dest="remove-singletons", action='store_true',  
-	help="Specify whether you want to remove sites where only one  "
+	"-remove_singletons", dest="remove_singletons", action='store_true',  
+	help="Specify whether you want to remove sites where only one genome contains a different base."
 	)
 parser.add_argument(
 	"snps_files", nargs="+",  
@@ -390,7 +392,7 @@ for v in ref_snps_obj.snps.values():
 if args.out_matrix:
 	print("Building SNP matrix...")
 
-	snp_mat = make_snp_matrix(query_snps_list)
+	snp_mat = make_snp_matrix(query_snps_list,args.remove_singletons)
 
 	print("Writing SNP matrix file...")
 
