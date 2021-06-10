@@ -244,7 +244,7 @@ def remove_singletons(snp_matrix):
 			}
 		for  genome in snp_matrix if genome != 'Genome_ID'}
 
-	new_snp_mat['Genome_ID'] = [x for x in snp_mat['Genome_ID'] if x not in singleton_positions]
+	new_snp_mat['Genome_ID'] = [x for x in snp_matrix['Genome_ID'] if x not in singleton_positions]
 	return new_snp_mat
 
 
