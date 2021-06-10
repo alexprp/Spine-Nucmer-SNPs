@@ -214,7 +214,36 @@ def make_snp_matrix(snps_obj_list):
 
 	return snp_matrix
 
-#def remove_singletons(snp_matrix):
+def remove_singletons(snp_matrix):
+	'''
+	Author: Alex P.R. Phillips
+	Detects positions in the SNP matrix where only one genome contains a certain base at that position,
+	removes that position, prints that information to the buffer, and returns a new matrix without them.
+	Args:
+    		snp_matrix (dict): Dictionary of structure {genome: {position: base}} produced by the function above
+    	Returns: 
+		(dict) {genome_id : {contig_position : nucleotide}}
+	'''
+
+	singleton_positions = {}
+	for pos in snp_matrix['Genome_ID']:
+    		seq = ''.join([snp_matrix[genome][pos] for genome in snp_matrix if genome != 'Genome_ID']).upper()
+    		base_counts = {base: seq.count(base) for base in 'ACGT'}
+    		if 1 in base_counts.values():
+        		bases = [x for x in base_counts if base_coutns[x] == 1]
+        		genomes = [x for x in snp_matrix if x != 'Genome_ID' and snp_matrix[x][pos].upper() in bases]
+        		singleton_positions[pos] = {genome: snp_matrix[genome][pos] for genome in genomes}
+        		singleton_positions[pos]['counts'] = base_counts
+        		print('Singleton position ' + pos + ' removed; '  + re.sub("[{}']",'',str(singleton_positions[pos])))
+	new_snp_mat = {
+		genome:
+			{position:
+			snp_matrix[genome][position] for position in snp_matrix[genome] if position not in singleton_positions
+			}
+		for  genome in snp_matrix if genome != 'Genome_ID'}
+
+	new_snp_mat['Genome_ID'] = [x for x in snp_mat['Genome_ID'] if x not in singleton_positions]
+	return new_snp_mat
 
 
 def make_snp_matrix_multifasta(snps_obj_list):
