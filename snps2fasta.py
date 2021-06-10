@@ -232,7 +232,7 @@ def remove_singletons(snp_matrix):
 			seq = ''.join([snp_matrix[genome][pos] for genome in snp_matrix if genome != 'Genome_ID']).upper()
 			base_counts = {base: seq.count(base) for base in 'ACGT'}
 			if 1 in base_counts.values():
-				bases = [x for x in base_counts if base_coutns[x] == 1]
+				bases = [x for x in base_counts if base_counts[x] == 1]
 				genomes = [x for x in snp_matrix if x != 'Genome_ID' and snp_matrix[x][pos].upper() in bases]
 				singleton_positions[pos] = {genome: snp_matrix[genome][pos] for genome in genomes}
 				singleton_positions[pos]['counts'] = base_counts
