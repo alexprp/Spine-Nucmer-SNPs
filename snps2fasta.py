@@ -321,7 +321,11 @@ parser.add_argument(
 	)
 parser.add_argument(
 	"-whole", dest="whole", action='store_true',  
-	help="Specify Whether you want the output fasta to be the entire core sequence or just the variant sites. "
+	help="Specify whether you want the output fasta to be the entire core sequence or just the variant sites. "
+	)
+parser.add_argument(
+	"-remove-singletons", dest="remove-singletons", action='store_true',  
+	help="Specify whether you want to remove sites where only one  "
 	)
 parser.add_argument(
 	"snps_files", nargs="+",  
