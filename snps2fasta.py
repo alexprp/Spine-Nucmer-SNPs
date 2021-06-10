@@ -326,7 +326,6 @@ def main():
 
 	with open(args.reference, 'r') as inref:
 		ref_fasta = fasta_to_dict(inref.read())
-	inref.close()
 
 	query_snps_list = []
 	snp_mat = False
@@ -365,7 +364,6 @@ def main():
 
 		with open(args.out_matrix, 'w+') as outmat:
 			headers = list(snp_mat["Genome_ID"])
-			write_string = ["Genome_ID" + args.matrix_delim + args.matrix_delim.join(headers)]
 			for k in sorted(snp_mat.keys()):
 				if k == "Genome_ID":
 					pass
