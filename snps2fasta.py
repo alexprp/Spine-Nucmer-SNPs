@@ -294,7 +294,7 @@ def fill_ref_dict_with_seq(ref_snps_obj, ref_seq_dict):
 
 	
 
-$def main():
+def main():
 
 
 	parser = argparse.ArgumentParser(
