@@ -412,7 +412,7 @@ if not args.whole:
 	if args.out_fasta:
 		if not snp_mat:
 			print("Building SNP matrix...")
-			snp_mat = make_snp_matrix(query_snps_list)
+			snp_mat = make_snp_matrix(query_snps_list,args.remove_singletons)
 
 else:
 
@@ -427,7 +427,7 @@ else:
 	del ref_snps_obj
 
 	print("Building SNP and backbone sequence matrix for whole core genome...")
-	snp_mat = make_snp_matrix(query_snps_list)
+	snp_mat = make_snp_matrix(query_snps_list,args.remove_singletons)
 
 	if not args.multifasta:
 		del query_snps_list
